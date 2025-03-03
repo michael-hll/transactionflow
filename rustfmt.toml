@@ -1,1 +1,15 @@
+unstable_features = true
+
 tab_spaces = 2
+fn_params_layout = "Vertical"
+fn_single_line = false
+#overflow_delimited_expr = true
+#chain_width = 1
+use_small_heuristics = "Off"
+
+# imports
+imports_layout = "Vertical"
+imports_granularity = "Item"
+reorder_imports = true
+#group_imports = "StdExternalCrate"
+imports_indent = "Visual"

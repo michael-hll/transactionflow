@@ -1,10 +1,16 @@
-use std::time::{SystemTime, UNIX_EPOCH};
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
-use actix_web::{HttpResponse, Responder, post, rt::System, web};
-use serde::{Deserialize, Serialize};
+use actix_web::HttpResponse;
+use actix_web::Responder;
+use actix_web::post;
+use actix_web::web;
+use serde::Deserialize;
+use serde::Serialize;
 use serde_json::json;
 
-use crate::{AppState, db};
+use crate::AppState;
+use crate::db;
 
 #[derive(Deserialize, Debug)]
 pub struct SignupRequest {
@@ -15,7 +21,10 @@ pub struct SignupRequest {
 }
 
 #[post("/auth/sign-up")]
-pub async fn sign_up(state: web::Data<AppState>, data: web::Json<SignupRequest>) -> impl Responder {
+pub async fn sign_up(
+  state: web::Data<AppState>,
+  data: web::Json<SignupRequest>,
+) -> impl Responder {
   let db = state.db.lock().await;
   if db::user::has_email_exists(&db, &data.email).await {
     return HttpResponse::UnprocessableEntity().json(json!({
@@ -46,7 +55,10 @@ pub struct Claims {
 }
 
 #[post("/auth/sign-in")]
-pub async fn sign_in(state: web::Data<AppState>, data: web::Json<SigninRequest>) -> impl Responder {
+pub async fn sign_in(
+  state: web::Data<AppState>,
+  data: web::Json<SigninRequest>,
+) -> impl Responder {
   let db = state.db.lock().await;
   let user = db::user::get_by_email(&db, &data.email).await;
 
@@ -68,11 +80,7 @@ pub async fn sign_in(state: web::Data<AppState>, data: web::Json<SigninRequest>)
   let claims = Claims {
     sub: user.id.to_string(),
     role: "user".to_string(),
-    exp: SystemTime::now()
-      .duration_since(UNIX_EPOCH)
-      .unwrap()
-      .as_secs()
-      + 4 * 60 * 60,
+    exp: SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs() + 24 * 60 * 60, // 24 hours
   };
 
   let token = jsonwebtoken::encode(
