@@ -105,3 +105,14 @@ pub async fn update(
   .await
   .unwrap();
 }
+
+pub async fn update_balance(
+  db: &sqlx::PgPool,
+  id: i64,
+  balance: Decimal,
+) {
+  sqlx::query!("UPDATE users SET balance = $1 WHERE id = $2", balance, id)
+    .execute(db)
+    .await
+    .unwrap();
+}

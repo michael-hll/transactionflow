@@ -18,3 +18,11 @@ pub async fn get_auth_user(
   let user_id = get_user_id(&req);
   db::user::get_by_id(db, user_id).await.unwrap()
 }
+
+pub fn is_credit(t: &str) -> bool {
+  t == "CREDIT"
+}
+
+pub fn is_debit(t: &str) -> bool {
+  t == "DEBIT"
+}
